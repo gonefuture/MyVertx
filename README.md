@@ -1,2 +1,2 @@
 # myVertx
-A project about application of Vert.
+A project about application of Vert.x.
