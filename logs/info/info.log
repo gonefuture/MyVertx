@@ -1,0 +1,16 @@
+2018-07-06 22:54:04 com.mongodb.diagnostics.logging.SLF4JLogger.info(SLF4JLogger.java:71) ---> Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-07-06 22:54:06 com.mongodb.diagnostics.logging.SLF4JLogger.info(SLF4JLogger.java:76) ---> Exception in monitor thread while connecting to server 127.0.0.1:27017
+com.mongodb.MongoException: java.io.IOException: 远程计算机拒绝网络连接。
+
+	at com.mongodb.connection.InternalStreamConnection.open(InternalStreamConnection.java:126)
+	at com.mongodb.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:113)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.io.IOException: 远程计算机拒绝网络连接。
+
+	at sun.nio.ch.Iocp.translateErrorToIOException(Iocp.java:309)
+	at sun.nio.ch.Iocp.access$700(Iocp.java:46)
+	at sun.nio.ch.Iocp$EventHandlerTask.run(Iocp.java:399)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	... 1 more

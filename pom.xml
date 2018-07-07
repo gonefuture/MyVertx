@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+<groupId>com.zhku</groupId>
+<artifactId>MyVertx</artifactId>
+<version>1.0</version>
+
+<properties>
+    <java.version>1.8</java.version>
+    <vertx.version>3.5.0</vertx.version>
+    <kotlin.version>1.2.31</kotlin.version>
+    <main.class>io.vertx.core.Launcher</main.class>
+    <main.verticle>com.zhku.MainVerticle</main.verticle>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-core</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-web</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-jdbc-client</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-mongo-client</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <!-- 日 志处理 -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.7.25</version>
+    </dependency>
+    <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>3.21.0-GA</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-kotlin</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-kotlin-coroutines</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-scala_2.12</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-groovy</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-js</artifactId>
+        <version>${vertx.version}</version>
+    </dependency>
+
+    <!--<dependency>-->
+        <!--<groupId>io.vertx</groupId>-->
+        <!--<artifactId>vertx-lang-ruby</artifactId>-->
+        <!--<version>${vertx.version}</version>-->
+    <!--</dependency>-->
+
+</dependencies>
+
+<build>
+    <plugins>
+        <!--scala的编译器-->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>add-source</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>add-source</goal>
+                    </goals>
+                    <configuration>
+                        <sources>
+                            <source>${project.basedir}/src/main/scala</source>
+                        </sources>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>add-test-source</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>add-test-source</goal>
+                    </goals>
+                    <configuration>
+                        <sources>
+                            <source>${project.basedir}/src/test/scala</source>
+                        </sources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+        <plugin>
+            <groupId>net.alchim31.maven</groupId>
+            <artifactId>scala-maven-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>compile</goal>
+                        <goal>testCompile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <!--kotlin的编译器-->
+        <plugin>
+            <artifactId>kotlin-maven-plugin</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <version>${kotlin.version}</version>
+            <executions>
+                <execution>
+                    <id>compile</id>
+                    <goals> <goal>compile</goal> </goals>
+                    <configuration>
+                        <jvmTarget>1.8</jvmTarget>
+                        <sourceDirs>
+                            <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                            <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                        </sourceDirs>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>test-compile</id>
+                    <goals> <goal>test-compile</goal> </goals>
+                    <configuration>
+                        <jvmTarget>1.8</jvmTarget>
+                        <sourceDirs>
+                            <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                            <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                        </sourceDirs>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        <!--java的编译器-->
+        <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.7.0</version>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <manifestEntries>
+                                    <Main-Class>${main.class}</Main-Class>
+                                    <Main-Verticle>${main.verticle}</Main-Verticle>
+                                </manifestEntries>
+                            </transformer>
+                            <!--多语言支持必需加入该转换器-->
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
+                            </transformer>
+
+                        </transformers>
+                        <artifactSet />
+                        <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-prod.jar</outputFile>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+
+</project>
