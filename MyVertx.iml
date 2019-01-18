@@ -3,10 +3,10 @@
   <component name="AutoImportedSourceRoots">
     <option name="directories">
       <list>
-        <option value="D:\GitHub\IdeaProjects\MyVertx/src/main/java" />
-        <option value="D:\GitHub\IdeaProjects\MyVertx/src/main/kotlin" />
-        <option value="D:\GitHub\IdeaProjects\MyVertx/src/test/java" />
-        <option value="D:\GitHub\IdeaProjects\MyVertx/src/test/kotlin" />
+        <option value="C:\project\MyVertx/src/main/java" />
+        <option value="C:\project\MyVertx/src/main/kotlin" />
+        <option value="C:\project\MyVertx/src/test/java" />
+        <option value="C:\project\MyVertx/src/test/kotlin" />
       </list>
     </option>
   </component>
@@ -17,7 +17,7 @@
         <compilerArguments>
           <option name="jvmTarget" value="1.8" />
           <option name="languageVersion" value="1.2" />
-          <option name="apiVersion" value="1.1" />
+          <option name="apiVersion" value="1.2" />
           <option name="pluginOptions">
             <array />
           </option>

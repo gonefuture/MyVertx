@@ -1,7 +1,8 @@
 package top.gonefuture.test.CoroutineApiTest
 
-import kotlinx.coroutines.experimental.*
-import kotlin.coroutines.experimental.buildSequence
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 fun main(args: Array<String>) {
@@ -10,9 +11,11 @@ fun main(args: Array<String>) {
 
 
 fun main() = runBlocking {
-    launch(Unconfined) {
+    launch{
         println("${Thread.currentThread().id} start")
-        val res = async(CommonPool) {
+
+
+        val res = async {
             println("task ${Thread.currentThread().id} start")
             Thread.sleep(5000)
             "hello world"
@@ -34,7 +37,7 @@ fun main() = runBlocking {
  */
 
 fun testYield() {
-    val lazySeq = buildSequence {
+    val lazySeq = sequence {
         print("START ")
         for (i in 1..5) {
             yield(i)
@@ -47,7 +50,3 @@ fun testYield() {
 }
 
 
-
-class  CoroutineTest {
-
-}
