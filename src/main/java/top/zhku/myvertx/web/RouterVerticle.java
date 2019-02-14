@@ -23,13 +23,15 @@ public class RouterVerticle extends AbstractVerticle {
     public void start() throws Exception {
         Router router = Router.router(vertx);
         router.route("/*").handler(ResponseContentTypeHandler.create());
-        router.route().handler(BodyHandler.create());
+        //1MB = 1048576L
+        router.route().handler(BodyHandler.create().setBodyLimit(1048576L));
+
 
         // 初始化UserRouter并启动相应服务
         UserRouter userRouter = new UserRouter(router);
         userRouter.initRoute();
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(80);
+        vertx.createHttpServer().requestHandler(router).listen(80);
     }
 
 

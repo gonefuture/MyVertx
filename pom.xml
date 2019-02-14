@@ -5,7 +5,7 @@
 <modelVersion>4.0.0</modelVersion>
 
 <groupId>com.zhku</groupId>
-<artifactId>MyVertx</artifactId>
+<artifactId>vertx-mqtt-server</artifactId>
 <version>1.0</version>
 
 <properties>
@@ -50,11 +50,19 @@
     </dependency>
 
     <!-- 日 志处理 -->
+    <!--<dependency>-->
+        <!--<groupId>org.slf4j</groupId>-->
+        <!--<artifactId>slf4j-log4j12</artifactId>-->
+        <!--<version>1.7.25</version>-->
+    <!--</dependency>-->
+
+
     <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.25</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.3</version>
     </dependency>
+
     <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
@@ -98,6 +106,12 @@
         <groupId>io.vertx</groupId>
         <artifactId>vertx-lang-js</artifactId>
         <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
     </dependency>
 
     <!--<dependency>-->

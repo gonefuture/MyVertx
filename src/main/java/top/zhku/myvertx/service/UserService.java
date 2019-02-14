@@ -10,13 +10,15 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <pre> <pre>
  */
 public class UserService extends AbstractVerticle {
-    private Logger LOG = Logger.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private MongoClient mongoClient;
 
@@ -27,7 +29,7 @@ public class UserService extends AbstractVerticle {
         super.start();
         vertx.eventBus().consumer("service://users",this::findUser);
         vertx.eventBus().consumer("service://user/add",this::addUser);
-        vertx.eventBus().consumer("hello", this::hello);
+        vertx.eventBus().consumer("service://hello", this::hello);
     }
 
     private <T> void hello(Message<T> tMessage) {
@@ -35,12 +37,11 @@ public class UserService extends AbstractVerticle {
     }
 
     private void addUser(Message<JsonObject> msg) {
-        LOG.debug("======dao"+msg.body());
         if (msg.body() != null) {
             mongoClient.save(       "user",msg.body(), res -> {
                if (res.succeeded()) {
                    String id = res.result();
-                   LOG.debug("=======================返回的id"+id);
+                   log.debug("=======================返回的id:{}",id);
                    msg.reply(id);
                } else {
                    msg.fail(500, res.cause().toString());

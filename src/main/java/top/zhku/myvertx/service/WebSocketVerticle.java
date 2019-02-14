@@ -9,7 +9,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.ext.web.Router;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import java.util.Map;
  * <pre> <pre>
  */
 public class WebSocketVerticle extends AbstractVerticle {
-    private Logger LOG = Logger.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     // 保存每一次连接到服务器的通道
     private Map<String,ServerWebSocket> connectionMap = new HashMap<>(16);
     private int countId = 0;
@@ -30,11 +32,9 @@ public class WebSocketVerticle extends AbstractVerticle {
 
         HttpServer httpServer = vertx.createHttpServer();
         Router router = Router.router(vertx);
-        router.route("/").handler(rct -> {
-            rct.response().sendFile("html/ws.html");
-        });
+        router.route("/").handler(rct -> rct.response().sendFile("html/ws.html"));
         websocketMethod(httpServer);
-        httpServer.requestHandler(router::accept).listen(8080);
+        httpServer.requestHandler(router).listen(8080);
 
     }
 

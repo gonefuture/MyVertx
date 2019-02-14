@@ -5,18 +5,20 @@ package top.zhku.myvertx;
  *  说明：
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.zhku.myvertx.service.UserService;
 import top.zhku.myvertx.service.WebSocketVerticle;
 import top.zhku.myvertx.web.RouterVerticle;
 import io.vertx.core.Vertx;
-import org.apache.log4j.Logger;
+
 
 
 /**
  * <pre> </pre>
  */
 public class MainVerticle {
-    private  Logger LOG = Logger.getLogger(this.getClass());
+    private Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     public static void main(String[] args){
         Vertx vertx = Vertx.vertx();

@@ -1,3 +1,4 @@
+#log4j.rootLogger=ERROR
 #test
 log4j.rootLogger=DEBUG, Console,err,info,warn
 #formal
@@ -10,6 +11,8 @@ log4j.logger.org.apache=INFO
 log4j.logger.java.sql.Connection=DEBUG
 log4j.logger.java.sql.Statement=DEBUG
 log4j.logger.java.sql.PreparedStatement=DEBUG
+log4j.logger.io.netty=OFF
+log4j.logger.com.mongodb.diagnostics=OFF
 
 #Console
 log4j.appender.Console=org.apache.log4j.ConsoleAppender
@@ -25,8 +28,8 @@ log4j.appender.err = org.apache.log4j.DailyRollingFileAppender
 log4j.appender.err.File =logs/error/error.log
 log4j.appender.err.DatePattern = '_'yyyy-MM-dd'.log'
 log4j.appender.err.Append = true
-log4j.appender.err.BufferedIO=true 
-log4j.appender.err.BufferSize=8192  
+log4j.appender.err.BufferedIO=true
+log4j.appender.err.BufferSize=8192
 ## 只输出ERROR级别以上的日志!!!
 log4j.appender.err.Threshold = ERROR
 log4j.appender.err.layout = org.apache.log4j.PatternLayout
@@ -39,9 +42,9 @@ log4j.appender.warn = org.apache.log4j.DailyRollingFileAppender
 log4j.appender.warn.File =logs/warn/warn.log
 log4j.appender.warn.DatePattern = '_'yyyy-MM-dd'.log'
 log4j.appender.warn.Append = true
-log4j.appender.warn.BufferedIO=true 
-log4j.appender.warn.BufferSize=8192  
-## 只输出info级别以上的日志!!!
+log4j.appender.warn.BufferedIO=true
+log4j.appender.warn.BufferSize=8192
+## 只输出warn级别以上的日志!!!
 log4j.appender.warn.Threshold = WARN
 log4j.appender.warn.layout = org.apache.log4j.PatternLayout
 log4j.appender.warn.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss} %l ---> %m%n
@@ -57,4 +60,4 @@ log4j.appender.info.Append = true
 ## 只输出info级别以上的日志!!!
 log4j.appender.info.Threshold = INFO
 log4j.appender.info.layout = org.apache.log4j.PatternLayout
-log4j.appender.info.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss} %l ---> %m%n
+log4j.appender.info.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss} %l ---> %m
