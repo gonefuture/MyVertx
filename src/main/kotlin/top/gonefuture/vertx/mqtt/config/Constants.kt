@@ -24,8 +24,6 @@ SOFTWARE.
 
 package top.gonefuture.vertx.mqtt.config
 
-import top.gonefuture.vertx.mqtt.web.dao.HumitureDao
-
 const val MESSAGE = "message"
 const val SEARCH = "search"
 const val FRIEND = "friend"
@@ -64,6 +62,18 @@ const val UUID = "uuid"
 const val END = "\r\n"
 const val SESSION_ID = "social-vertex-id"
 
-const val HUMITURE_ADD = "dao://humiture/add"
-const val HUMITURE_FIND = "dao://humiture/find"
-const val HUMITURE_FIND_ONE = "dao://humiture/find_one"
+
+
+
+// 数据库相关
+
+const val COLLECTION = "iot_data"
+const val DB_NAME = "iot"
+const val DB_PORT = 27017
+
+
+
+const val IOT_ADD = "dao://IOT/add"
+const val IOT_FIND = "dao://IOT/find"
+const val IOT_FIND_ONE = "dao://IOT/find_one"
+const val IOT_COUNT = "dao://IOT/count"

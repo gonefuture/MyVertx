@@ -4,6 +4,8 @@ import io.netty.handler.codec.mqtt.MqttQoS
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
 import io.vertx.mqtt.MqttServer
+import org.slf4j.LoggerFactory
+import top.gonefuture.vertx.mqtt.config.IOT_ADD
 
 
 /**
@@ -17,10 +19,12 @@ import io.vertx.mqtt.MqttServer
 
 class MQTTServer : AbstractVerticle() {
 
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     override fun start(startFuture: Future<Void>?) {
         val mqttServer = MqttServer.create(vertx)
         mqttServer.endpointHandler { endpoint ->
-            // shows main connect info
+            // 展示主连接信息
             println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession}")
 
             if (endpoint.auth() != null) {
@@ -32,52 +36,23 @@ class MQTTServer : AbstractVerticle() {
 
             println("[keep alive timeout = ${endpoint.keepAliveTimeSeconds()}]")
 
-            // accept connection from the remote client
+            // 允许远程客户端的远程连接
             endpoint.accept(true)
 
             endpoint.disconnectHandler { v -> println("客户端 $v  离线")}
 
             endpoint.publishHandler { message  ->
 
-                println("===========")
+                val  data = message.payload().toJsonObject()
+                vertx.eventBus().send<String>(IOT_ADD,data) { reply ->
+                    if (reply.succeeded()) {
+                        log.info("mqtt服务器：数据 $data 发布到 ${message.topicName()}" )
+                    }
+                }
+
                 println("收到信息 [ ${message.payload().toString(java.nio.charset.Charset.defaultCharset())} ]   " +
                         "with QoS [${message.qosLevel()}]")
 
-                println("主题名称： ${message.topicName()}")
-                if (message.qosLevel() == MqttQoS.AT_LEAST_ONCE) {
-                    endpoint.publishAcknowledge(message.messageId())
-                } else if (message.qosLevel() == MqttQoS.EXACTLY_ONCE) {
-                    endpoint.publishReceived(message.messageId())
-                }
-
-
-
-                // specifing handlers for handling QoS 1 and 2
-                endpoint.publishAcknowledgeHandler { messageId ->
-
-                    println("Received ack for message = ${messageId}")
-
-                }.publishReceivedHandler { messageId ->
-
-                    endpoint.publishRelease(messageId)
-
-                }.publishCompletionHandler { messageId ->
-
-                    println("Received ack for message = $messageId")
-                }
-
-
-                // handling requests for subscriptions
-                endpoint.subscribeHandler { subscribe ->
-
-                    val grantedQosLevels = mutableListOf<Any?>()
-                    for (s in subscribe.topicSubscriptions()) {
-                        println("Subscription for ${s.topicName()} with QoS ${s.qualityOfService()}")
-                        grantedQosLevels.add(s.qualityOfService())
-                    }
-
-
-                }
 
             }.publishReleaseHandler{ messageId ->
 

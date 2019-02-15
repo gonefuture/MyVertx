@@ -1,7 +1,8 @@
 package top.gonefuture.vertx.mqtt.web
 
 
-import top.gonefuture.vertx.mqtt.web.dao.HumitureDao
+import top.gonefuture.vertx.mqtt.server.MQTTServer
+import top.gonefuture.vertx.mqtt.web.dao.IotDao
 import top.gonefuture.vertx.mqtt.web.router.RouterVerticle
 
 
@@ -17,7 +18,11 @@ import top.gonefuture.vertx.mqtt.web.router.RouterVerticle
 fun main() {
     val vertx = io.vertx.core.Vertx.vertx()
 
-    vertx.deployVerticle(HumitureDao::class.java.name)
+    vertx.deployVerticle(IotDao::class.java.name)
     vertx.deployVerticle(RouterVerticle::class.java.name)
+
+
+    vertx.deployVerticle(MQTTServer::class.java.name)
+
     println("启动web项目")
 }
