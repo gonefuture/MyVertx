@@ -23,7 +23,7 @@ import top.zhku.myvertx.common.UFailureHandler
  * Description: vertx-mqtt-server
  */
 
-class IotWebRouter(private val router: Router)  {
+class IOTWebRouter(private val router: Router)  {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

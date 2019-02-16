@@ -12,10 +12,13 @@
             const URL_IOT_FIND = "/iot/find";
             const URL_IOT_COUNT = "/iot/count";
 
+
+            socket = new WebSocket("ws://localhost");
+
             let app = new Vue({
                 el:'#box',
                 data:{
-                    iot_count : 0 ,
+                    data_count : 0 ,
                     current_time : new Date(),
                     items : [
                         {
@@ -43,6 +46,13 @@
 
             async function fetchData() {
                 try {
+                    let count_response = await fetch(URL_IOT_COUNT);
+                    let count_json = await count_response.json();
+                    this.data_count = count_json.data;
+                    console.info(this.data_count);
+
+                    this.current_time = new Date();
+
                     // 注意这里的await语句，其所在的b函数必须有async关键字声明
                     let response = await fetch(URL_IOT_FIND);
                     let responseJson =  await response.json();
@@ -56,10 +66,7 @@
                           })
                       }
                     );
-
-                    this.current_time = new Date();
-
-                    this.iot_count = await fetch(URL_IOT_COUNT);
+                    this.items.reverse();
 
                 } catch(error) {
                     console.error(error);
@@ -85,7 +92,7 @@
 
         <table class="table table-bordered table-hover">
             <caption class="h3 text-info">温湿度数据</caption>
-            <p> {{current_time.toLocaleString()}} 共有 {{iot_count}} 条数据<p>
+            <p> {{current_time.toLocaleString()}} 数据库共有 {{data_count}} 条数据<p>
             <tr class="text-danger">
                 <th class="text-center">记录时间</th>
                 <th class="text-center">温度</th>

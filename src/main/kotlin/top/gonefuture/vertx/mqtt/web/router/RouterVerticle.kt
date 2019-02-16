@@ -1,10 +1,12 @@
 package top.gonefuture.vertx.mqtt.web.router
 
 
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.ResponseContentTypeHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
+import top.gonefuture.vertx.mqtt.config.IOT_UPDATE
 
 
 /**
@@ -24,10 +26,23 @@ class RouterVerticle : CoroutineVerticle() {
         router.route().handler(BodyHandler.create())
 
         // 初始化UserRouter并启动相应服务
-        val webRouter = IotWebRouter(router)
+        val webRouter = IOTWebRouter(router)
         webRouter.initRoute()
 
-        vertx.createHttpServer().requestHandler( router).listen(80)
+        val httpServer = vertx.createHttpServer()
+
+        // websocket
+        httpServer.websocketHandler{ webSocket ->
+            // 数据更新时触发
+            vertx.eventBus().consumer<JsonObject>(IOT_UPDATE) { msg ->
+                webSocket.writeTextMessage(msg.body().toString())
+            }
+
+        }
+
+
+
+        httpServer.requestHandler( router).listen(80)
 
     }
 

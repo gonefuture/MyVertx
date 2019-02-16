@@ -5,7 +5,11 @@ import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
+import io.vertx.kotlin.core.json.JsonArray
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.CoroutineVerticle
+import io.vertx.kotlin.ext.mongo.FindOptions
 import org.slf4j.LoggerFactory
 import top.gonefuture.vertx.mqtt.config.*
 
@@ -15,7 +19,7 @@ import top.gonefuture.vertx.mqtt.config.*
  * @version 1.00
  * Description: vertx-mqtt-server
  */
-public class IotDao : CoroutineVerticle() {
+public class IOTDao : CoroutineVerticle() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -41,7 +45,7 @@ public class IotDao : CoroutineVerticle() {
 
     fun findOneIOT(msg: Message<String>?) {
         mongoClient.findOne(null,null,null) {
-    
+
         }
     }
 
@@ -58,7 +62,18 @@ public class IotDao : CoroutineVerticle() {
      *  列出数据库的温湿度
      */
     open fun findIOT(msg: Message<JsonObject>) {
-        mongoClient.find(COLLECTION, msg.body()) { res ->
+        val query = msg.body()
+        val options = FindOptions(
+                limit =  100,
+                sort =  json { obj{"publish_time" to -1 } }
+        )
+//        mongoClient.findBatchWithOptions(COLLECTION, query,options).exceptionHandler { throwable ->
+//            throwable.printStackTrace()
+//        }.handler{ res ->
+//            msg.reply(JsonArray(res))
+//        }
+
+        mongoClient.findWithOptions(COLLECTION,query,options) {res ->
             msg.reply(JsonArray(res.result()))
         }
     }
