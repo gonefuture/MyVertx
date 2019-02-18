@@ -25,34 +25,22 @@ class MQTTServer : AbstractVerticle() {
         val mqttServer = MqttServer.create(vertx)
         mqttServer.endpointHandler { endpoint ->
             // 展示主连接信息
-            println("MQTT client [${endpoint.clientIdentifier()}] request to connect, clean session = ${endpoint.isCleanSession}")
-
-            if (endpoint.auth() != null) {
-                println("[username = ${endpoint.auth().username}, password = ${endpoint.auth().password}]")
-            }
-            if (endpoint.will() != null) {
-                println("[will topic = ${endpoint.will().willTopic} msg = ${endpoint.will().willMessage} QoS = ${endpoint.will().willQos} isRetain = ${endpoint.will().isWillRetain}]")
-            }
-
-            println("[keep alive timeout = ${endpoint.keepAliveTimeSeconds()}]")
 
             // 允许远程客户端的远程连接
             endpoint.accept(true)
 
-            endpoint.disconnectHandler { v -> println("客户端 $v  离线")}
+            //endpoint.disconnectHandler { v -> println("客户端 $v  离线")}
 
             endpoint.publishHandler { message  ->
 
                 val  data = message.payload().toJsonObject()
-                vertx.eventBus().send<String>(IOT_ADD,data) { reply ->
+                log.info("-----" )
+                vertx.eventBus().send<Void>(IOT_ADD,data) { reply ->
+                    log.info("============" )
                     if (reply.succeeded()) {
                         log.info("mqtt服务器：数据 $data 发布到 ${message.topicName()}" )
                     }
                 }
-
-                println("收到信息 [ ${message.payload().toString(java.nio.charset.Charset.defaultCharset())} ]   " +
-                        "with QoS [${message.qosLevel()}]")
-
 
             }.publishReleaseHandler{ messageId ->
 

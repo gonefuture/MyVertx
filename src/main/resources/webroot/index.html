@@ -13,8 +13,6 @@
             const URL_IOT_COUNT = "/iot/count";
 
 
-            socket = new WebSocket("ws://localhost");
-
             let app = new Vue({
                 el:'#box',
                 data:{
@@ -30,52 +28,71 @@
                 },
                 methods:{
                     add:function(){
-                        fetchData.bind(this);
-                        fetchData().catch( e =>
+                        websocketInit.call(this).catch( e =>
                             console.error(e)
                         );
                     }
                 },
 
-                created: function () {
-                    fetchData.call(this).catch( e =>
-                        console.error(e)
+                created: async function () {
+                    let response = await fetch(URL_IOT_FIND);
+                    let responseJson =  await response.json();
+                    let jsonList = responseJson.data;
+                    jsonList.forEach(
+                        item =>  {
+                            this.items.push({
+                                publish_time : new Date(item.publish_time).toLocaleString(),
+                                temperature : item.temperature,
+                                humidity : item.humidity
+                            })
+                        }
                     );
+
+                    let socket = new WebSocket("ws://localhost");
+                    socket.onopen = function (event) {
+                        console.log("websocket 连接打开");
+                    };
+
+                    socket.onmessage = event => {
+                        let jsonList = [];
+                        // 如果服务端是写的二进制数据，则此处的blob也是一个二进制对象，提取数据时需要Blob类和FileReader类配合使用
+                        let blob = event.data;
+                        jsonList = JSON.parse(blob);
+                        this.items.length = 0;
+                        jsonList.forEach(
+                            item =>  {
+                                this.items.push({
+                                    publish_time : new Date(item.publish_time).toLocaleString(),
+                                    temperature : item.temperature,
+                                    humidity : item.humidity
+                                })
+                            }
+                        );
+                        console.info( " this.items.reverse(): ", this.items.reverse())
+
+                    };
                 }
             });
 
-            async function fetchData() {
-                try {
-                    let count_response = await fetch(URL_IOT_COUNT);
-                    let count_json = await count_response.json();
-                    this.data_count = count_json.data;
-                    console.info(this.data_count);
+            async function websocketInit() {
 
-                    this.current_time = new Date();
+                // websocket连接打开
 
-                    // 注意这里的await语句，其所在的b函数必须有async关键字声明
-                    let response = await fetch(URL_IOT_FIND);
-                    let responseJson =  await response.json();
-                    this.items = [];
-                    responseJson.data.forEach(
-                      item =>  {
-                          this.items.push({
-                              publish_time : new Date(item.publish_time).toLocaleString(),
-                              temperature : item.temperature,
-                              humidity : item.humidity
-                          })
-                      }
-                    );
-                    this.items.reverse();
 
-                } catch(error) {
-                    console.error(error);
-                }
+                // let count_response = await fetch(URL_IOT_COUNT);
+                // let count_json = await count_response.json();
+                // this.data_count = count_json.data;
+
+                this.current_time = new Date();
+
+                // 注意这里的await语句，其所在的b函数必须有async关键字声明
+
+
             }
 
-            let timer = setInterval(function () {
-                  fetchData.call(app);
-            },20000);
+            // let timer = setInterval(function () {
+            //       fetchData.call(app);
+            // },20000);
         }
     </script>
 </head>

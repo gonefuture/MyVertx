@@ -1,11 +1,11 @@
 package top.gonefuture.vertx.mqtt.web.dao;
 
 
+import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
-import io.vertx.kotlin.core.json.JsonArray
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.CoroutineVerticle
@@ -25,10 +25,13 @@ public class IOTDao : CoroutineVerticle() {
 
 
     private lateinit var mongoClient: MongoClient
+    private lateinit var eventBus : EventBus
 
 
     override suspend fun start() {
         val config = JsonObject().put("host", "127.0.0.1").put("port", DB_PORT).put("db_name", DB_NAME)
+
+        eventBus = vertx.eventBus()
 
         mongoClient = MongoClient.createShared(vertx, config)
         vertx.eventBus().consumer<JsonObject>(IOT_FIND) { this.findIOT(it) }
@@ -52,8 +55,14 @@ public class IOTDao : CoroutineVerticle() {
     fun addIOT(msg: Message<JsonObject>) {
         val data = msg.body()
         data.put("publish_time",System.currentTimeMillis())
-        mongoClient.save(COLLECTION,data) {
-            msg.reply("插入成功")
+        mongoClient.save(COLLECTION,data) { res ->
+            res.result()
+            // 命令和查询指责分离，命令
+            log.info("数据库更新成功")
+            eventBus.send<Void>(COMMAND_IOT_UPDATE, COMMAND_IOT_UPDATE) {
+                // 数据更新
+            }
+
         }
     }
 
@@ -61,10 +70,9 @@ public class IOTDao : CoroutineVerticle() {
     /**
      *  列出数据库的温湿度
      */
-    open fun findIOT(msg: Message<JsonObject>) {
+    fun findIOT(msg: Message<JsonObject>) {
         val query = msg.body()
         val options = FindOptions(
-                limit =  100,
                 sort =  json { obj{"publish_time" to -1 } }
         )
 //        mongoClient.findBatchWithOptions(COLLECTION, query,options).exceptionHandler { throwable ->

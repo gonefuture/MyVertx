@@ -39,6 +39,7 @@ public class WebSocketVerticle extends AbstractVerticle {
     }
 
     private void websocketMethod(HttpServer httpServer) {
+
         httpServer.websocketHandler(webSocket -> {
             // 获取每一个链接的ID
             String id = webSocket.binaryHandlerID();
