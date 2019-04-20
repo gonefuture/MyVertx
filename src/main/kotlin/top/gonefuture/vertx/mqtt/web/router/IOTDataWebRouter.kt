@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import top.gonefuture.vertx.mqtt.config.IOT_ADD
 import top.gonefuture.vertx.mqtt.config.IOT_COUNT
 import top.gonefuture.vertx.mqtt.config.IOT_FIND
+import top.gonefuture.vertx.mqtt.util.CheckUtil
 import top.zhku.myvertx.common.ResultFormat
 import top.zhku.myvertx.common.StatusCodeMsg
 import top.zhku.myvertx.common.UFailureHandler
@@ -23,17 +24,16 @@ import top.zhku.myvertx.common.UFailureHandler
  * Description: vertx-mqtt-server
  */
 
-class IOTWebRouter(private val router: Router)  {
+class IOTDataWebRouter(private val router: Router)  {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
 
-
     fun initRoute() {
-        router.route("/iot/find").handler(this::findIOT)
-        router.route("/iot/add").handler(this::addIOT)
+        router.route(IOT_FIND).handler(this::findIOT)
+        router.route(IOT_ADD).handler(this::addIOT)
         router.route("/").handler (this::index)
-        router.route("/iot/count").handler(this::countIOT)
+        router.route(IOT_COUNT).handler(this::countIOT)
 
     }
 
@@ -43,7 +43,7 @@ class IOTWebRouter(private val router: Router)  {
                 val body = reply.result().body()
                 rct.response().end(ResultFormat.format(StatusCodeMsg.C200, body))
             } else {
-                val result = failResult(reply)
+                val result = CheckUtil.failResult(reply)
                 rct.response().end(result)
             }
         }
@@ -67,22 +67,12 @@ class IOTWebRouter(private val router: Router)  {
                 val body = reply.result().body()
                 rct.response().end(ResultFormat.format(StatusCodeMsg.C200, body))
             } else {
-                val result = failResult(reply)
+                val result = CheckUtil.failResult(reply)
                 rct.response().end(result)
             }
         }
     }
 
 
-    private fun failResult(reply: AsyncResult<*>): String {
-        return if (reply.cause() is ReplyException) {
-            val re = reply.cause() as ReplyException
-            val code = re.failureCode()
-            val asStatus = UFailureHandler.asStatus(code)
-            ResultFormat.formatAsZero(asStatus)
-        } else {
-            ResultFormat.formatAsZero(StatusCodeMsg.C412)
-        }
-    }
 
 }

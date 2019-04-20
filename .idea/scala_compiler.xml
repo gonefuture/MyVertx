@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="Maven 1" modules="vertx-mqtt-server" />
+    <profile name="Maven 1" modules="vert-mqtt-server,vertx-mqtt-server" />
   </component>
 </project>
