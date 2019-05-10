@@ -25,8 +25,6 @@ class RedisVerticle : CoroutineVerticle() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-
-
     companion object {
         lateinit var redis : RedisClient
     }
@@ -35,15 +33,10 @@ class RedisVerticle : CoroutineVerticle() {
 
         val config = RedisOptions()
                 .setHost("127.0.0.1")
-
         redis =  RedisClient.create(vertx,config)
 
-
         vertx.eventBus().consumer<String>("getIOTCache"){ this.getIOTCache(it) }
-
         vertx.eventBus().consumer<String>("setIOTCache"){ this.putIOTCache(it) }
-
-
 
     }
 

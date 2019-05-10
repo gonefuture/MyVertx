@@ -91,7 +91,9 @@ const val IOT_CHART_DATA = "/api/iot/chart"
 
 const val COLLECTION_USER = "iot_user"
 const val USER_ADD = "/api/user/add"
-const val USER_FIND = "/api/user/find"
+const val USER_ONE_FIND = "/api/user/find"
+const val USER_FIND = "/api/users"
+const val USER_DELETE = "/api/user/delete"
 
 const val COLLECTION_WARNING = "iot_warning"
 const val WARNING_ADD = "/api/warning/add"

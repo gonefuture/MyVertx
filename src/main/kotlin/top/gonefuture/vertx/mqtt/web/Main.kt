@@ -6,7 +6,7 @@ import top.gonefuture.vertx.mqtt.util.RedisVerticle
 import top.gonefuture.vertx.mqtt.util.TimedTaskVerticle
 import top.gonefuture.vertx.mqtt.web.dao.IOTDaoVerticle
 import top.gonefuture.vertx.mqtt.web.router.RouterVerticle
-import java.sql.Time
+
 
 
 /**
@@ -18,11 +18,12 @@ import java.sql.Time
 
 
 fun main() {
+
     val vertx = io.vertx.core.Vertx.vertx()
 
     //
 
-    //vertx.deployVerticle(TimedTaskVerticle::class.java.name)
+    vertx.deployVerticle(TimedTaskVerticle::class.java.name)
 
     vertx.deployVerticle(RedisVerticle::class.java.name)
     vertx.deployVerticle(RouterVerticle::class.java.name)

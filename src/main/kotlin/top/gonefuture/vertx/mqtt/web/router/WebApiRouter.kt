@@ -44,6 +44,8 @@ class WebApiRouter (private val router: Router)  {
 
         router.route("/api/login").handler(this::userLogin)
         router.route(USER_ADD).handler(this::register)
+        router.route(USER_FIND).handler(this::findUser)
+        router.route(USER_DELETE).handler(this::deleteUser)
 
         router.route(WARNING_ADD).handler(this::addWarning)
         router.route(WARNING_FIND).handler(this::findWarning)
@@ -100,7 +102,7 @@ class WebApiRouter (private val router: Router)  {
         val _username = parameter.get("username")
         val query = JsonObject().put("username" ,_username)
 
-        rct.vertx().eventBus().send<JsonObject>(USER_FIND,query) { res ->
+        rct.vertx().eventBus().send<JsonObject>(USER_ONE_FIND,query) { res ->
             if (res.succeeded()) {
                 val userJson = res.result().body()
 
@@ -146,6 +148,36 @@ class WebApiRouter (private val router: Router)  {
         }
     }
 
+    fun findUser(rct: RoutingContext) {
+        rct.vertx().eventBus().send<JsonArray>(USER_FIND,JsonObject()) { reply ->
+            if (reply.succeeded()) {
+                val body = reply.result().body()
+                rct.response().end(ResultFormat.format(StatusCodeMsg.C200, body))
+            } else {
+                val result = CheckUtil.failResult(reply)
+                rct.response().end(result)
+            }
+        }
+    }
+
+
+    fun deleteUser(rct: RoutingContext) {
+        if (rct.getBody() == null || "".equals(rct.getBodyAsString().trim())) {
+            rct.response().end(ResultFormat.formatAsZero(StatusCodeMsg.C412))
+            return
+        }
+        val query = rct.getBodyAsJson()
+        rct.vertx().eventBus().send<JsonObject>(USER_DELETE,query) { reply ->
+            if (reply.succeeded()) {
+                val body = reply.result().body()
+                rct.response().end(ResultFormat.format(StatusCodeMsg.C200, body))
+            } else {
+                val result = CheckUtil.failResult(reply)
+                rct.response().end(result)
+            }
+        }
+    }
+
 
 
     fun addWarning(rct: RoutingContext) {
@@ -182,13 +214,11 @@ class WebApiRouter (private val router: Router)  {
 
 
     fun deleteWarning(rct: RoutingContext) {
-
         if (rct.getBody() == null || "".equals(rct.getBodyAsString().trim())) {
             rct.response().end(ResultFormat.formatAsZero(StatusCodeMsg.C412))
             return
         }
-        val body = rct.getBodyAsJson()
-        val query = JsonObject().put("name",body.getString("name"))
+        val query = rct.getBodyAsJson()
 
         rct.vertx().eventBus().send<JsonObject>(WARNING_DELETE,query) { res ->
             if(res.succeeded()) {

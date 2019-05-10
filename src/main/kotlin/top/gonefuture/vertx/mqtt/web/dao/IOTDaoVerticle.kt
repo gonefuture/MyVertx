@@ -3,12 +3,10 @@ package top.gonefuture.vertx.mqtt.web.dao;
 
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
+import io.vertx.core.json.Json
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.mongo.MongoClient
-import io.vertx.kotlin.core.json.JsonArray
-import io.vertx.kotlin.core.json.json
-import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.ext.mongo.FindOptions
 import io.vertx.redis.RedisClient
@@ -35,10 +33,6 @@ public class IOTDaoVerticle : CoroutineVerticle() {
 
         eventBus = vertx.eventBus()
 
-        // redis 客户端
-        val confg = json { obj {
-            "host" to "127.0.0.1"
-        }}
         redis =  RedisClient.create(vertx)
         // mongo客户端
         val config  = JsonObject()
@@ -54,8 +48,9 @@ public class IOTDaoVerticle : CoroutineVerticle() {
 
         // 用户的接口
         vertx.eventBus().consumer<JsonObject>(USER_ADD) { this.addUser(it) }
+        vertx.eventBus().consumer<JsonObject>(USER_ONE_FIND) { this.findOneUser(it) }
         vertx.eventBus().consumer<JsonObject>(USER_FIND) { this.findUser(it) }
-
+        vertx.eventBus().consumer<JsonObject>(USER_DELETE) { this.deleteUser(it) }
 
 
         vertx.eventBus().consumer<JsonObject>(WARNING_ADD) { this.addWarning(it) }
@@ -146,11 +141,6 @@ public class IOTDaoVerticle : CoroutineVerticle() {
                         limit = 20
 
         )
-//        mongoClient.findBatchWithOptions(COLLECTION, query,options).exceptionHandler { throwable ->
-//            throwable.printStackTrace()
-//        }.handler{ res ->
-//            msg.reply(JsonArray(res))
-//        }
         mongoClient.findWithOptions(COLLECTION_IOT,query,options) {res ->
             msg.reply(JsonArray(res.result()))
         }
@@ -158,23 +148,52 @@ public class IOTDaoVerticle : CoroutineVerticle() {
 
 
     /**
-     *  查找用户
+     *  查找单个用户
      */
-    fun findUser(msg: Message<JsonObject>) {
+    fun findOneUser(msg: Message<JsonObject>) {
         val query = msg.body()
         mongoClient.findOne(COLLECTION_USER,query,null) { res ->
             msg.reply(res.result())
         }
     }
 
+
+    /**
+     *  查找多个用户
+     */
+    fun findUser(msg: Message<JsonObject>) {
+        val query = msg.body()
+        mongoClient.find(COLLECTION_USER,query) { res ->
+            msg.reply(JsonArray(res.result()))
+        }
+    }
+
+
+
+
+
     /**
      *  添加新用户
      */
     fun addUser(msg : Message<JsonObject>) {
         val data = msg.body()
+        data.put("createTime",System.currentTimeMillis())
         mongoClient.save(COLLECTION_USER,data) {
          log.info("用户 $data 保存到MongoDB数据库")
             msg.reply(data)
+        }
+    }
+
+
+
+    /**
+     *  删除用户,根据主键删除
+     */
+    fun deleteUser(msg : Message<JsonObject>) {
+        val data = msg.body()
+        val query = JsonObject().put("_id",data.getString("_id","0"))
+        mongoClient.findOneAndDelete(COLLECTION_USER,query)  { res ->
+            msg.reply(res.result())
         }
     }
 
@@ -183,7 +202,7 @@ public class IOTDaoVerticle : CoroutineVerticle() {
      */
     fun addWarning(msg : Message<JsonObject>) {
         val data = msg.body()
-        mongoClient.save(COLLECTION_WARNING,data) {
+        mongoClient.insert(COLLECTION_WARNING,data) {
             log.info("警报规则 $data 保存到MongoDB数据库")
             msg.reply(data)
         }
@@ -206,7 +225,8 @@ public class IOTDaoVerticle : CoroutineVerticle() {
 
 
     fun deleteWarning(msg : Message<JsonObject>) {
-        val query = msg.body()
+        val data = msg.body()
+        val query = JsonObject().put("_id",data.getString("_id","0"))
         mongoClient.findOneAndDelete(COLLECTION_WARNING,query)  { res ->
             msg.reply(res.result())
         }

@@ -34,7 +34,6 @@ class IOTDataWebRouter(private val router: Router)  {
         router.route(IOT_ADD).handler(this::addIOT)
         router.route("/").handler (this::index)
         router.route(IOT_COUNT).handler(this::countIOT)
-
     }
 
     private fun countIOT(rct: RoutingContext) {
